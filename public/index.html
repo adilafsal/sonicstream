@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SonicStream - YouTube to MP3 Converter</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #121212;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: #1e1e1e;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 8px;
+            color: #ff0050;
+        }
+        p {
+            color: #aaaaaa;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 16px;
+            border: 1px solid #333;
+            background: #2a2a2a;
+            color: #fff;
+            border-radius: 6px;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+        input:focus {
+            outline: none;
+            border-color: #ff0050;
+        }
+        button {
+            background: #ff0050;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #e00045;
+        }
+        #status {
+            margin-top: 16px;
+            font-size: 14px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>SonicStream 🎵</h2>
+        <p>Convert YouTube videos to MP3 instantly</p>
+        <input type="text" id="url" placeholder="Paste YouTube URL here...">
+        <button onclick="convertVideo()">Convert & Download</button>
+        <div id="status"></div>
+    </div>
+
+    <script>
+        async function convertVideo() {
+            const url = document.getElementById('url').value;
+            const status = document.getElementById('status');
+            
+            if (!url) {
+                status.innerText = "Please enter a valid YouTube URL!";
+                status.style.color = "#ff4444";
+                return;
+            }
+
+            status.innerText = "Processing and converting audio...";
+            status.style.color = "#ffaa00";
+
+            try {
+                const response = await fetch(`/download?url=${encodeURIComponent(url)}`);
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const downloadUrl = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = downloadUrl;
+                    a.download = 'audio.mp3';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    status.innerText = "Download complete!";
+                    status.style.color = "#00C851";
+                } else {
+                    status.innerText = "Conversion failed. Check the link.";
+                    status.style.color = "#ff4444";
+                }
+            } catch (err) {
+                status.innerText = "An error occurred during conversion.";
+                status.style.color = "#ff4444";
+            }
+        }
+    </script>
+</body>
+</html>
